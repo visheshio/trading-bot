@@ -6,7 +6,7 @@ export const config = {
   runtime: 'nodejs',
 }
 
-export  function authMiddleware(req: Request, res: Response, next: NextFunction) {
+module.exports =  function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const header = req.headers["authorization"] as string;
     try {
         console.log( header);
