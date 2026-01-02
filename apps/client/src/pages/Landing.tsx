@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export function Landing() {
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground flex flex-col">
+    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
       <header className="flex items-center justify-between px-6 py-4 border-b border-white/10">
         <h1 className="text-2xl font-bold text-white">Trading Bot</h1>
         <Link to="/auth">
@@ -18,10 +18,10 @@ export function Landing() {
           </h2>
 
           <p className="text-lg text-white/70 mb-8">
-            
+
             Design, execute, and monitor trading workflows with a visual workflow builder. Connect triggers and actions to create automated trading strategies.
           </p>
-          
+
           <div className="grid grid-cols-3 gap-4 mb-12">
             <div className="bg-white/5 backdrop-blur p-4 rounded-lg border border-white/10">
               <div className="text-3xl mb-2">⚡</div>

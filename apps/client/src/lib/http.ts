@@ -5,8 +5,8 @@ import axios from 'axios';
 const BASE_URL = (import.meta as any)?.env?.VITE_API_BASE_URL || 'http://localhost:3000';
 const TOKEN_KEY = 'auth_token';
 
-export type IdResponse = { id: string};
-export type SigninResponse = { id: string; token:  string};
+export type IdResponse = { id: string };
+export type SigninResponse = { id: string; token: string };
 
 export type WorkflowNode = {
     nodeId: string;
@@ -25,12 +25,12 @@ export type WorkflowEdge = {
 
 export type Workflow = {
     _id: string;
-    userid: string; 
+    userid: string;
     nodes: WorkflowNode[];
     edges: WorkflowEdge[];
 };
 
-export function setAuthToken(token: string | null) {    
+export function setAuthToken(token: string | null) {
     if (token) localStorage.setItem(TOKEN_KEY, token);
     else localStorage.removeItem(TOKEN_KEY);
 }
@@ -39,42 +39,56 @@ export function getAuthToken(): string | null {
     return localStorage.getItem(TOKEN_KEY);
 }
 
-const api=axios.create({
+const api = axios.create({
     baseURL: BASE_URL,
 });
 
 api.interceptors.request.use((config) => {
     const token = getAuthToken();
-    if (token) {    
+    if (token) {
         config.headers = config.headers ?? {};
         (config.headers as any)['Authorization'] = token;
     }
     return config;
 });
+api.interceptors.response.use(
+    (response) => {
 
-export async function apiSignup(body: { username: string; password: string}): Promise<SigninResponse> {
+        return response;
+    },
+    (error) => {
+
+        if (error.response && error.response.data && error.response.data.message) {
+
+            return Promise.reject(new Error(error.response.data.message));
+        }
+        return Promise.reject(error);
+    }
+);
+
+export async function apiSignup(body: { username: string; password: string }): Promise<SigninResponse> {
     const res = await api.post<SigninResponse>('/signup', body);
     setAuthToken(res.data.token);
     return res.data;
 }
 
-export async function apiSignin(body: { username: string; password: string}): Promise<SigninResponse> {
+export async function apiSignin(body: { username: string; password: string }): Promise<SigninResponse> {
     const res = await api.post<SigninResponse>('/signin', body);
     setAuthToken(res.data.token);
     return res.data;
-}   
+}
 
-export async function apiCreateWorkflow(body:any): Promise<IdResponse> {
+export async function apiCreateWorkflow(body: any): Promise<IdResponse> {
     const res = await api.post<IdResponse>('/workflow', body);
     return res.data;
-}   
+}
 
-export async function apiUpdateWorkflow(workflowId:string, body:any): Promise<IdResponse> {
+export async function apiUpdateWorkflow(workflowId: string, body: any): Promise<IdResponse> {
     const res = await api.put<IdResponse>(`/workflow/${workflowId}`, body);
     return res.data;
-}   
+}
 
-export async function apiGetWorkflow(workflowId:string): Promise<Workflow> {
+export async function apiGetWorkflow(workflowId: string): Promise<Workflow> {
     const res = await api.get<Workflow>(`/workflow/${workflowId}`);
     return res.data;
 }
@@ -84,7 +98,7 @@ export async function apiListWorkflows(): Promise<Workflow[]> {
     return res.data;
 }
 
-export async function apiListExecution(workflowId:string): Promise<any[]> {
+export async function apiListExecution(workflowId: string): Promise<any[]> {
     const res = await api.get<any[]>(`/workflow/executions/${workflowId}`);
     return res.data;
 }

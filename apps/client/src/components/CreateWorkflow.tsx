@@ -59,6 +59,7 @@ export function CreateWorkflow() {
     },
     startingNodeId: string,
   } | null>(null);
+  const [isTriggerSheetOpen, setIsTriggerSheetOpen] = useState(true);
 
   // Load workflows from MongoDB backend on mount
   useEffect(() => {
@@ -82,7 +83,13 @@ export function CreateWorkflow() {
 
   // Load selected workflow details
   useEffect(() => {
-    if (!selectedWorkflow) return;
+    if (!selectedWorkflow) {
+      // Clear state for new workflow
+      setNodes([]);
+      setEdges([]);
+      setStatus('Ready');
+      return;
+    }
     const fetchWorkflow = async () => {
       try {
         const wf = await apiGetWorkflow(selectedWorkflow);
@@ -237,7 +244,14 @@ export function CreateWorkflow() {
             <span className="text-sm text-foreground/60">Design automations visually</span>
           </div>
           <div className="ml-4">
-            <select value={selectedWorkflow ?? ''} onChange={(e) => setSelectedWorkflow(e.target.value || null)} className="px-2 py-1 rounded">
+            <select
+              value={selectedWorkflow ?? ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedWorkflow(val === "" ? null : val);
+              }}
+              className="px-2 py-1 rounded"
+            >
               <option value="">New Workflow</option>
               {workflows.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
             </select>
@@ -252,28 +266,32 @@ export function CreateWorkflow() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`${sidebarCollapsed ? 'hidden md:block' : 'block'} w-80 min-w-[18rem] border-r bg-gradient-to-b from-white/40 to-transparent p-4`}>
+        <aside className={`${sidebarCollapsed ? 'hidden md:block' : 'block'} w-80 min-w-[18rem] border-r bg-gradient-to-b from-muted to-transparent p-4`}>
           <div className="rounded-md p-3 shadow-sm bg-card/60">
             <h2 className="text-sm font-medium">Actions</h2>
             <p className="text-xs text-muted-foreground mt-2">Drag triggers and actions into the canvas or connect nodes to build flows.</p>
           </div>
           <div className="mt-4">
-            <TriggerSheet onSelect={(type, metadata) => {
-              setNodes(prev => ([...prev, {
-                id: Math.random().toString(),
-                type,
-                data: {
-                  kind: "trigger",
-                  metadata,
-                },
-                position: { x: 0, y: 0 },
-              }]));
-            }} />
+            <TriggerSheet
+              open={isTriggerSheetOpen}
+              setOpen={setIsTriggerSheetOpen}
+              onSelect={(type, metadata) => {
+                setNodes(prev => ([...prev, {
+                  id: Math.random().toString(),
+                  type,
+                  data: {
+                    kind: "trigger",
+                    metadata,
+                  },
+                  position: { x: 0, y: 0 },
+                }]));
+              }}
+            />
           </div>
           <div className="mt-4 border-t pt-4">
             <Button
               className="w-full"
-              onClick={() => window.location.reload()}
+              onClick={() => setIsTriggerSheetOpen(true)}
             >
               Create Trigger
             </Button>
@@ -286,7 +304,12 @@ export function CreateWorkflow() {
               <div className="text-center opacity-80">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" className="mx-auto mb-3"><path d="M12 2v6" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M6 8l6 6 6-6" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 <div className="text-xl font-medium">Click Trigger to start</div>
-                <a className="text-blue-500 hover:text-blue-700">Create Trigger</a>
+                <a
+                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                  onClick={() => setIsTriggerSheetOpen(true)}
+                >
+                  Create Trigger
+                </a>
                 <div className="text-sm text-muted-foreground mt-2">Use the Actions panel to add nodes</div>
               </div>
             </div>
@@ -323,7 +346,14 @@ export function CreateWorkflow() {
               onConnectEnd={onConnectEnd}
               fitView
             >
-              <MiniMap maskColor="#111827" nodeStrokeColor={(_n: any) => '#060608ff'} nodeColor={(_n: any) => '#0f172a'} />
+              <MiniMap
+                maskColor="var(--background)"
+                nodeStrokeColor="var(--foreground)"
+                nodeColor="var(--muted)"
+                className="!bg-muted/50"
+                zoomable
+                pannable
+              />
               <Controls />
               <Background />
             </ReactFlow>

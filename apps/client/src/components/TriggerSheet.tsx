@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import type { Nodekind, NodeMetadata } from "./CreateWorkflow";
 import { useState } from "react";
-import  {SUPPORTED_ASSETS, type PriceTriggerMetadata } from "common/types";
-import  { type TimerNodeMetadata } from "common/types";
+import { SUPPORTED_ASSETS, type PriceTriggerMetadata } from "common/types";
+import { type TimerNodeMetadata } from "common/types";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
@@ -39,10 +39,13 @@ const SUPPORTED_TRIGGERS = [
 
 export const TriggerSheet = ({
   onSelect,
+  open,
+  setOpen,
 }: {
   onSelect: (kind: Nodekind, metadata: NodeMetadata) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }) => {
-  const [open, setOpen] = useState(true);
   const [metadata, SetMetadata] = useState<
     PriceTriggerMetadata | TimerNodeMetadata
   >({
@@ -52,7 +55,7 @@ export const TriggerSheet = ({
     SUPPORTED_TRIGGERS[0].id
   );
   return (
-    <Sheet open={open} onOpenChange={(v) => setOpen(v)}>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Select Trigger</SheetTitle>
@@ -150,7 +153,7 @@ export const TriggerSheet = ({
             Create Trigger
           </Button>
         </SheetFooter>
-            </SheetContent>
+      </SheetContent>
     </Sheet>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -18,10 +19,14 @@ export function Auth() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+    if (!isLogin && password !== confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
     try {
       const body = { username, password };
-      
+
       if (isLogin) {
         const data = await apiSignin(body);
         navigate('/dashboard');
@@ -42,7 +47,7 @@ export function Auth() {
   };
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground flex flex-col">
+    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
       <header className="flex items-center px-6 py-4 border-b border-white/10">
         <Link to="/" className="text-2xl font-bold text-white">Trading Bot</Link>
       </header>
