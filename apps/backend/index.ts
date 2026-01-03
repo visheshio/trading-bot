@@ -13,7 +13,7 @@ import {
   NodesModel,
   UserModel,
   WorkflowModel,
-} from "db/client";
+} from "../../packages/db/index.js";
 import { authMiddleware } from "./middleware";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
