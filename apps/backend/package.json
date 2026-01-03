@@ -12,11 +12,12 @@
   "dependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/mongoose": "^5.11.97",
     "cors": "^2.8.5",
     "db": "*",
     "express": "^5.2.1",
-    "jose": "^6.1.3",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.1"
   }
 }
