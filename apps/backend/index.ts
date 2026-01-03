@@ -42,9 +42,6 @@ app.post("/signup", async (req, res) => {
       username: data.username,
       password: data.password,
     });
-    const token = jwt.sign({
-      id: user._id,
-    }, JWT_SECRET);
 
     const token = await new SignJWT({ id: user._id.toString() })
       .setProtectedHeader({ alg: 'HS256' }) 
@@ -129,7 +126,7 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   } catch (e) {
     res.status(411).json({ message: "Failed to update workflow" });
   }
-  res.json(workflow);
+
 });
 
 app.get("/workflows", authMiddleware, async (req, res) => {
