@@ -15,7 +15,6 @@ import {
 } from "db/client";
 import jwt from "jsonwebtoken";
 import { authMiddleware } from "./middleware";
-import { resolve } from "bun";
 console.log("Mongo URL:", process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL!);
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -78,7 +77,8 @@ app.post("/signin", async (req, res) => {
       return res.status(403).json({ message: "Incorrect Credentials" });
     }
   } catch (e) {
-    return res.status(411).json({ message: "username already exists" });
+    console.log(e)
+    return res.status(411).json({ message: e });
   }
 });
 
