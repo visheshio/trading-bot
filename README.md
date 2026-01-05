@@ -1,135 +1,126 @@
-# Turborepo starter
 
-This Turborepo starter is maintained by the Turborepo core team.
+***
 
-## Using this example
+# 📈 TradeBot: The Visual Trading Bot Builder
 
-Run the following command:
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://trading-n8n-monorepo-client-9q2irjifu.vercel.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-```sh
-npx create-turbo@latest
-```
+### 🚀 Automate Your Trading Strategy—No Code Required.
 
-## What's inside?
+**TradeBot** is a powerful workflow automation tool inspired by **n8n**, specifically designed for financial trading.
 
-This Turborepo includes the following packages/apps:
+For the uninitiated: **n8n** is a tool that lets you connect different apps together using a visual interface. This project applies that same logic to trading. Instead of writing complex code to say *"If Bitcoin hits $50k, buy Ethereum,"* users can simply drag and drop nodes to create that logic visually.
 
-### Apps and Packages
+> **Note:** This project is currently in the **Architectural/UI phase**. It features a fully functional workflow engine, user management, and dashboard, but is not yet connected to live exchanges (like Binance or Coinbase). It is designed to be "Exchange Agnostic"—ready to be plugged into any API.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## 🛠 Tech Stack
 
-### Utilities
+Built with a focus on performance, scalability, and type safety using a modern monorepo structure.
 
-This Turborepo has some additional tools already setup for you:
+*   **Frontend:** React, TypeScript, TailwindCSS
+*   **UI Components:** Shadcn UI (for accessible, professional design)
+*   **Backend/Database:** MongoDB Atlas (Scalable NoSQL storage)
+*   **Security:** Jose (JWE/JWS for robust JSON Web Token encryption)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+---
 
-### Build
+## ✨ Key Features
 
-To build all apps and packages, run the following command:
+*   **🎨 Visual Workflow Builder:** Drag-and-drop interface to design trading algorithms. Create triggers and actions without writing a single line of code.
+*   **🔐 Secure Authentication:** robust Sign-up and Sign-in flows to keep user strategies private.
+*   **📊 User Dashboard:** A central hub to manage workflows, view account status, and monitor performance.
+*   **📜 Execution Logging:** Detailed history of every workflow run. See exactly what happened, when it happened, and why.
+*   **🌗 Themeable UI:** Built-in Dark and Light mode support for day/night trading sessions.
+*   **💾 Workflow Management:** Save, Clear, Edit, and Run workflows on demand.
 
-```
-cd my-turborepo
+---
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+## 📸 Application Tour
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+### 1. The Landing Page
+A clean, welcoming entry point introducing the platform.
+![Landing Page](https://github.com/user-attachments/assets/4c40727f-4375-4bf4-9e3d-a52e3189caa5)
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 2. Authentication
+Secure access is paramount. New users can register, and existing users are authenticated securely before accessing the dashboard.
+| Sign In | Sign Up |
+| :---: | :---: |
+| ![Sign In](https://github.com/user-attachments/assets/25c7973b-03d9-46bb-af12-aa49da9eaf44) | ![Sign Up](https://github.com/user-attachments/assets/d2a1dd88-6a6e-4b95-b471-c8f533eddd7a) |
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### 3. The Dashboard
+The command center. If you are new, it's a clean slate. Once you start building, this populates with your active trading bots and their statuses.
+![Dashboard](https://github.com/user-attachments/assets/9d3bc5cb-c6f6-4279-946e-db5d1e4ab4c2)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### 4. Visual Workflow Editor (The Core)
+This is where the magic happens. Users can create triggers (e.g., "Every 5 minutes") and actions (e.g., "Check Price"). The UI supports full drag-and-drop capabilities.
+![Workflow Editor](https://github.com/user-attachments/assets/1367e133-8c39-455a-9cbe-2c6a147a5383)
 
-### Develop
+*Users can customize the interface with Dark Mode:*
+![Dark Mode](https://github.com/user-attachments/assets/cceb23c9-aa25-40d1-9b59-09c78091cf4d)
 
-To develop all apps and packages, run the following command:
+### 5. Workflow Management
+Manage complexity with ease. Create new workflows, modify existing ones, or clear the canvas to start fresh.
+![Management](https://github.com/user-attachments/assets/8df8133a-95bf-42a6-a9b7-548bf5e3e9cc)
 
-```
-cd my-turborepo
+### 6. Execution & Logs
+Transparency is key in trading. Users can drill down into specific execution logs to debug their strategies or confirm trades.
+![Execution](https://github.com/user-attachments/assets/e7f550d7-cf75-4d64-95f3-55292347b59c)
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+*Detailed status views:*
+![Status](https://github.com/user-attachments/assets/93a8c215-2cd7-464f-b33f-7d78f625399e)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+---
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚀 Getting Started Locally
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+To run this application on your local machine:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/trading-n8n-monorepo.git
+    cd trading-n8n-monorepo
+    ```
 
-### Remote Caching
+2.  **Install Dependencies:**
+    ```bash
+    bun install
+    ```
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+3.  **Environment Setup:**
+    Create a `.env` file in the root directory and add your MongoDB connection string and JWT secret:
+    ```env
+    DATABASE_URL="your_mongodb_connection_string"
+    JWT_SECRET="your_secure_secret"
+    ```
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+4.  **Run the App:**
+    ```bash
+    bun run dev
+    ```
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+---
 
-```
-cd my-turborepo
+## 🗺 Roadmap
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+*   [x] **Core Architecture:** Workflow Engine, Auth, Database.
+*   [x] **UI/UX:** Dashboard, Node Editor, Theme Support.
+*   [ ] **Exchange Integration:** Connect CCXT or specific APIs (Binance, Alpaca) to allow real trades.
+*   [ ] **Backtesting:** Allow users to run workflows against historical data.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+---
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🤝 Contributing
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Contributions are welcome! Whether it's connecting a new exchange API, fixing a bug, or improving the UI. Please feel free to fork the repo and submit a Pull Request.
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+---
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+*Project created by [ Vishesh Maheshwari]*
 
-## Useful Links
 
-Learn more about the power of Turborepo:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
