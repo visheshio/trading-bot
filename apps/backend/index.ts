@@ -18,9 +18,6 @@ import { authMiddleware } from "./middleware.js";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
 
-console.log("Mongo URL:", process.env.MONGO_URL);
-mongoose.connect(process.env.MONGO_URL!);
-
 const app = express();
 const port = 3000;
 
@@ -164,6 +161,16 @@ app.get("/nodes", async (req, res) => {
   res.json(nodes);
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server started");
-});
+if (process.env.NODE_ENV !== "production") {
+  void mongoose.connect(process.env.MONGO_URL!).then(() => {
+    console.log("MongoDB connected");
+  });
+}
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(process.env.PORT || port, () => {
+    console.log("Server started");
+  });
+}
+
+export default app;
