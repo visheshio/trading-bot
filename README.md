@@ -120,7 +120,7 @@ Contributions are welcome! Whether it's connecting a new exchange API, fixing a 
 
 ---
 
-*Project created by [ Vishesh Maheshwari]*
+*Project created by [ Vishesh Maheshwari ]*
 
 
 
