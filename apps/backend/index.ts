@@ -13,7 +13,7 @@ import {
   NodesModel,
   UserModel,
   WorkflowModel,
-} from "../../packages/db/index.js";
+} from "db";
 import { authMiddleware } from "./middleware.js";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
@@ -140,17 +140,21 @@ app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
   res.json(workflow);
 });
 
-app.get("/workflows", authMiddleware, async (req, res) => {
-  const workflows = await WorkflowModel.find({ userid: req.userid });
-  res.json(workflows);
-});
-
 app.get(
   "/workflow/executions/:workflowId",
   authMiddleware,
   async (req, res) => {
+    // Check if the workflow belongs to the user
+    const workflow = await WorkflowModel.findOne({
+      _id: req.params.workflowId,
+      userid: req.userid,
+    });
+    if (!workflow) {
+      return res.status(404).json({ message: "Workflow not found" });
+    }
+
     const executions = await ExecutionModel.find({
-      workflowId: req.params.workflowId, userId: req.userid
+      workflowId: req.params.workflowId
     }); 
     res.json(executions);
   }
