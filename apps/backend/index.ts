@@ -18,11 +18,35 @@ import { authMiddleware } from "./middleware.js";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
 
+export async function connectToDatabase() {
+  const dbUrl = process.env.MONGO_URL || process.env.DATABASE_URL;
+  if (!dbUrl) {
+    console.warn("No MONGO_URL or DATABASE_URL set in environment variables");
+    return;
+  }
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+  await mongoose.connect(dbUrl);
+  console.log("MongoDB connected successfully");
+}
+
 const app = express();
 const port = 3000;
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://trading-n8n-monorepo-client.vercel.app'
+];
+
 app.use(cors({
-    origin: ['http://localhost:5173','https://trading-n8n-monorepo-client.vercel.app' ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow requests or adjust as needed
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -166,14 +190,10 @@ app.get("/nodes", async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== "production") {
-  void mongoose.connect(process.env.MONGO_URL!).then(() => {
-    console.log("MongoDB connected");
-  });
-}
-
-if (process.env.NODE_ENV !== "production") {
-  app.listen(process.env.PORT || port, () => {
-    console.log("Server started");
+  void connectToDatabase().then(() => {
+    app.listen(process.env.PORT || port, () => {
+      console.log(`Server started on port ${process.env.PORT || port}`);
+    });
   });
 }
 
