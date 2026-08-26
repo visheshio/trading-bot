@@ -1,12 +1,5 @@
-import serverless from "serverless-http";
+import app from "../apps/backend/index.js";
 
-let cachedHandler: any = null;
-
-export default async function handler(req: any, res: any) {
-  if (!cachedHandler) {
-    const backendModule = await import("../apps/backend/index.js");
-    const app = backendModule.default || backendModule;
-    cachedHandler = serverless(app);
-  }
-  return cachedHandler(req, res);
+export default function handler(req: any, res: any) {
+  return app(req, res);
 }
