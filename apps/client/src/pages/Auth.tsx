@@ -36,8 +36,8 @@ export function Auth() {
       }
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An error occurred';
-      if (errorMsg.includes('Failed to fetch') || errorMsg.includes('ERR_')) {
-        setError('Cannot connect to backend. Make sure the backend server is running on http://localhost:3000');
+      if (errorMsg.includes('Failed to fetch') || errorMsg.includes('ERR_') || errorMsg.includes('Network Error')) {
+        setError('Cannot connect to backend server. Please check your connection or server status.');
       } else {
         setError(errorMsg);
       }

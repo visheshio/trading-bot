@@ -128,7 +128,22 @@ const ExecutionSchema = new Schema({
     type: Date,     
     }   
 });    
-export const UserModel = mongoose.model("User", UserSchema);
-export const WorkflowModel = mongoose.model("Workflows", WorkflowSchema);
-export const NodesModel = mongoose.model("Nodes", NodesSchema);
-export const ExecutionModel = mongoose.model("Executions", ExecutionSchema);
+export const UserModel = mongoose.models.User || mongoose.model("User", UserSchema);
+export const WorkflowModel = mongoose.models.Workflows || mongoose.model("Workflows", WorkflowSchema);
+export const NodesModel = mongoose.models.Nodes || mongoose.model("Nodes", NodesSchema);
+export const ExecutionModel = mongoose.models.Executions || mongoose.model("Executions", ExecutionSchema);
+
+let cachedConnection: typeof mongoose | null = null;
+
+export async function connectToDatabase() {
+  if (cachedConnection && mongoose.connection.readyState >= 1) {
+    return cachedConnection;
+  }
+  const mongoUrl = process.env.MONGO_URL || process.env.DATABASE_URL;
+  if (!mongoUrl) {
+    throw new Error("MONGO_URL or DATABASE_URL environment variable is missing");
+  }
+  cachedConnection = await mongoose.connect(mongoUrl);
+  return cachedConnection;
+}
+

@@ -1,8 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import serverless from 'serverless-http';
-import app from '../apps/backend/index';
+import serverless from "serverless-http";
+import app from "../apps/backend/index.js";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const handler = serverless(app as any);
-  return handler(req, res);
+const serverlessHandler = serverless(app as any);
+
+export default async function handler(req: any, res: any) {
+  return serverlessHandler(req, res);
 }

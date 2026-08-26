@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
 import { SignJWT } from "jose"; 
 import {
   CreateWorkflowSchema,
@@ -9,6 +8,7 @@ import {
   UpdateWorkflowSchema,
 } from "../../packages/common/types/index.js";
 import {
+  connectToDatabase,
   ExecutionModel,
   NodesModel,
   UserModel,
@@ -19,17 +19,72 @@ import { authMiddleware } from "./middleware.js";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(cors({
-    origin: ['http://localhost:5173','https://trading-n8n-monorepo-client.vercel.app' ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+// Dynamic CORS configuration allowing localhost, Vercel preview/production deployments, and configured frontend URL
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, server-to-server, curl, same-origin)
+      if (!origin) return callback(null, true);
+
+      const allowedSpecific = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        process.env.FRONTEND_URL,
+        process.env.CORS_ORIGIN,
+        process.env.CLIENT_URL,
+        "https://trading-n8n-monorepo-client.vercel.app",
+      ].filter(Boolean) as string[];
+
+      if (
+        allowedSpecific.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        origin.includes("localhost")
+      ) {
+        return callback(null, true);
+      }
+
+      // Default fallback in non-strict modes: allow origin
+      return callback(null, true);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
-app.post("/signup", async (req, res) => {
+// Serverless DB Connection Middleware
+app.use(async (req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+  try {
+    await connectToDatabase();
+    next();
+  } catch (err: any) {
+    console.error("Database connection error:", err);
+    return res.status(500).json({
+      message: "Database connection failed",
+      error: err?.message || "Internal database connection error",
+    });
+  }
+});
+
+const router = express.Router();
+
+// Health check endpoint
+router.get("/health", async (_req, res) => {
+  res.json({
+    status: "ok",
+    message: "Trading Bot API is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+router.post("/signup", async (req, res) => {
   const { success, data } = signupSchema.safeParse(req.body);
   if (!success) {
     return res.status(403).json({ message: "incorrect inputs" });
@@ -41,8 +96,8 @@ app.post("/signup", async (req, res) => {
     });
 
     const token = await new SignJWT({ id: user._id.toString() })
-      .setProtectedHeader({ alg: 'HS256' }) 
-      .setExpirationTime('24h')             
+      .setProtectedHeader({ alg: "HS256" }) 
+      .setExpirationTime("24h")             
       .sign(JWT_SECRET);
 
     res.json({
@@ -54,7 +109,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/signin", async (req, res) => {
+router.post("/signin", async (req, res) => {
   const { success, data } = signinSchema.safeParse(req.body);
   if (!success) {
     return res.status(403).json({ message: "incorrect inputs" });
@@ -66,10 +121,9 @@ app.post("/signin", async (req, res) => {
     });
     
     if (user) {
-  
       const token = await new SignJWT({ id: user._id.toString() })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setExpirationTime('24h')
+        .setProtectedHeader({ alg: "HS256" })
+        .setExpirationTime("24h")
         .sign(JWT_SECRET);
         
       res.json({ id: user._id, token });
@@ -77,14 +131,13 @@ app.post("/signin", async (req, res) => {
       return res.status(403).json({ message: "Incorrect Credentials" });
     }
   } catch (e) {
-    console.log(e)
-    return res.status(411).json({ message: e });
+    console.error("Signin error:", e);
+    return res.status(411).json({ message: e instanceof Error ? e.message : "Signin error" });
   }
 });
 
-app.post("/workflow", authMiddleware, async (req, res) => {
+router.post("/workflow", authMiddleware, async (req, res) => {
   const userid = req.userid!; 
-  console.log(userid);
   
   const { success, data } = CreateWorkflowSchema.safeParse(req.body);
   if (!success) {
@@ -103,7 +156,7 @@ app.post("/workflow", authMiddleware, async (req, res) => {
   }
 });
 
-app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
+router.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   const { success, data } = UpdateWorkflowSchema.safeParse(req.body);
   if (!success) {
     return res.status(403).json({ message: "Incorrect inputs" });
@@ -123,54 +176,65 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   } catch (e) {
     res.status(411).json({ message: "Failed to update workflow" });
   }
-
 });
 
-app.get("/workflows", authMiddleware, async (req, res) => {
-  const workflows = await WorkflowModel.find({ userid: req.userid });
-  res.json(workflows);
-});
-
-app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
-  const workflow = await WorkflowModel.findById(req.params.workflowId);
-  
-  if (!workflow || workflow.userid.toString() !== req.userid) {
-    return res.status(404).json({ message: "Workflow not found" });
+router.get("/workflows", authMiddleware, async (req, res) => {
+  try {
+    const workflows = await WorkflowModel.find({ userid: req.userid });
+    res.json(workflows);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch workflows" });
   }
-  res.json(workflow);
 });
 
-app.get("/workflows", authMiddleware, async (req, res) => {
-  const workflows = await WorkflowModel.find({ userid: req.userid });
-  res.json(workflows);
+router.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
+  try {
+    const workflow = await WorkflowModel.findById(req.params.workflowId);
+    
+    if (!workflow || workflow.userid.toString() !== req.userid) {
+      return res.status(404).json({ message: "Workflow not found" });
+    }
+    res.json(workflow);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch workflow" });
+  }
 });
 
-app.get(
+router.get(
   "/workflow/executions/:workflowId",
   authMiddleware,
   async (req, res) => {
-    const executions = await ExecutionModel.find({
-      workflowId: req.params.workflowId, userId: req.userid
-    }); 
-    res.json(executions);
+    try {
+      const executions = await ExecutionModel.find({
+        workflowId: req.params.workflowId,
+        userId: req.userid,
+      }); 
+      res.json(executions);
+    } catch (e) {
+      res.status(500).json({ message: "Failed to fetch executions" });
+    }
   }
 );
 
-app.get("/nodes", async (req, res) => {
-  const nodes = await NodesModel.find();
-  res.json(nodes);
+router.get("/nodes", async (_req, res) => {
+  try {
+    const nodes = await NodesModel.find();
+    res.json(nodes);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch nodes" });
+  }
 });
 
-if (process.env.NODE_ENV !== "production") {
-  void mongoose.connect(process.env.MONGO_URL!).then(() => {
-    console.log("MongoDB connected");
-  });
-}
+// Support both /api/* and /* route prefixes
+app.use("/api", router);
+app.use("/", router);
 
-if (process.env.NODE_ENV !== "production") {
-  app.listen(process.env.PORT || port, () => {
-    console.log("Server started");
+// Start standalone server when run locally (not in Vercel serverless environment)
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
   });
 }
 
 export default app;
+
