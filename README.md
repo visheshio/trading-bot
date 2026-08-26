@@ -1,6 +1,8 @@
 
 ***
 
+
+
 # 📈 TradeBot: The Visual Trading Bot Builder
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=vercel)](https://trading-n8n-monorepo-client-9q2irjifu.vercel.app/)
@@ -120,7 +122,7 @@ Contributions are welcome! Whether it's connecting a new exchange API, fixing a 
 
 ---
 
-*Project created by [ Vishesh Maheshwari]*
+*Project created by [ Vishesh Maheshwari ]*
 
 
 

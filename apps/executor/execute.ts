@@ -18,7 +18,7 @@ type EdgeDocument={
 
 
 export async function execute(nodes:NodeDocument[],edges:EdgeDocument[]){
-    const trigger = nodes.find(x => x.data.kind ==="TRIGGER");
+    const trigger = nodes.find(x => x.data?.kind ==="TRIGGER");
     if (!trigger){
         return;
     }
@@ -35,8 +35,14 @@ export async function executeRecursive(sourceId:string,nodes:NodeDocument[],edge
         }
         switch(node.type ){
             case "lighter":
-               await executelighter(node.data.metadata.asset,node.data.metadata.quantity,node.data.metadata.type,node.credentials.api_key);
-            }
+               await executelighter(
+                 node.data.metadata?.symbol,
+                 node.data.metadata?.qty,
+                 node.data.metadata?.type,
+                 node.credentials?.api_key || ""
+               );
+               break;
+        }
     }))
 
     await Promise.all(nodesToExecute.map(id => executeRecursive(id,nodes,edges)))
