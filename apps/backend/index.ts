@@ -54,10 +54,35 @@ app.use(
   })
 );
 
+import mongoose from "mongoose";
+
 app.use(express.json());
 
-// Serverless DB Connection Middleware
-app.use(async (req, res, next) => {
+const router = express.Router();
+
+// Health check endpoint (non-blocking)
+router.get("/health", async (_req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatusMap: Record<number, string> = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+  // Attempt background connect if disconnected
+  if (dbState === 0) {
+    connectToDatabase().catch((e) => console.error("Background DB connect error:", e.message));
+  }
+  res.json({
+    status: "ok",
+    message: "Trading Bot API is running",
+    database: dbStatusMap[dbState] || "unknown",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Serverless DB Connection Middleware for operational endpoints
+router.use(async (req, res, next) => {
   if (req.method === "OPTIONS") {
     return next();
   }
@@ -73,16 +98,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-const router = express.Router();
-
-// Health check endpoint
-router.get("/health", async (_req, res) => {
-  res.json({
-    status: "ok",
-    message: "Trading Bot API is running",
-    timestamp: new Date().toISOString(),
-  });
-});
 
 router.post("/signup", async (req, res) => {
   const { success, data } = signupSchema.safeParse(req.body);

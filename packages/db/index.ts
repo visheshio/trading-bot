@@ -147,7 +147,10 @@ export async function connectToDatabase() {
   if (!mongoUrl) {
     throw new Error("MONGO_URL or DATABASE_URL environment variable is missing");
   }
-  cachedConnection = await mongoose.connect(mongoUrl);
+  cachedConnection = await mongoose.connect(mongoUrl, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 5000,
+  });
   return cachedConnection;
 }
 
