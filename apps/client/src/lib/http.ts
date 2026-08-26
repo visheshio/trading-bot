@@ -5,7 +5,8 @@ import axios from 'axios';
 const RAW_URL = (import.meta as any)?.env?.VITE_API_BASE_URL || (import.meta as any)?.env?.VITE_BACKEND_URL;
 const BASE_URL = (RAW_URL !== undefined && RAW_URL !== '')
     ? RAW_URL.replace(/\/+$/, '')
-    : (import.meta.env.PROD ? '' : 'http://localhost:3000');
+    : (import.meta.env.PROD ? '/api' : 'http://localhost:3000');
+
 
 const TOKEN_KEY = 'auth_token';
 
